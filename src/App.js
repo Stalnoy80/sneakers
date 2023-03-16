@@ -1,9 +1,9 @@
 function App() {
   return (
-    <div className="Wrapper">
+    <div className="wrapper">
       <header>
         <div className="headerLeft">
-          <svg />
+          <img width={40} height={40} src="logo.png" />
           <div className="headerInfo">
             <h3>React Sneakers</h3>
             <p>Магазин лучших кроссовок</p>
@@ -11,11 +11,11 @@ function App() {
         </div>
         <ul className="headerRight">
           <li>
-            <svg />
+            <img width={18} height={18} src="cart.svg" />
             <span>1205 руб.</span>
           </li>
           <li>
-            <svg />
+            <img width={18} height={18} src="user.svg" />
           </li>
         </ul>
       </header>
