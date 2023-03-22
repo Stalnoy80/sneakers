@@ -167,6 +167,7 @@ header {
 }
 
 .overlay {
+  flex: 1;
   position: absolute;
   left: 0;
   top: 0;
@@ -202,6 +203,8 @@ header {
 }
 .items {
   flex: 1;
+  overflow: auto;
+  margin-bottom: 40px;
 }
 
 .removeBtn {
