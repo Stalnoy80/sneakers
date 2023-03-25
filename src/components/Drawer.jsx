@@ -1,11 +1,17 @@
 import React from 'react';
 
-export const Drawer = () => {
+export const Drawer = ({ onClickCartWillClose }) => {
   return (
-    <div style={{ display: 'none' }} className="overlay">
+    <div className="overlay">
       <div className="drawer ">
         <h2 className="mb-30 justify-between d-flex ">
-          Корзина <img className="removeBtn cu-p" src="/delete.svg" alt="delete" />
+          Корзина{' '}
+          <img
+            onClick={onClickCartWillClose}
+            className="removeBtn cu-p"
+            src="/delete.svg"
+            alt="close"
+          />
         </h2>
 
         <div className="items">
@@ -34,7 +40,7 @@ export const Drawer = () => {
               <p className="mb-5">Мужские Кроссовки Nike Blazer Mid Suede</p>
               <b>12 999 руб.</b>
             </div>
-            <img className="removeBtn" src="/delete.svg" alt="delete" />
+            <img className="removeBtn" src="/delete.svg" alt="close" />
           </div>
         </div>
         <div className="cartTotalBlock">
