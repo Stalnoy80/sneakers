@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styles from './Card.module.scss';
 
-export const Card = ({ title, price, priceTag, img, onClickPlusButton, onClickFavoriteButton }) => {
-  const [isAdded, setIsAdded] = useState(false);
+export const Card = ({ title, price, img, priceTag, onClickPlusButton, onClickFavoriteButton }) => {
+  const [isAdded, setIsAdded] = useState(0);
 
   const onClickPlus = () => {
     setIsAdded(!isAdded);
+    onClickPlusButton({ title, price, img });
   };
 
-  console.log(isAdded);
   return (
     <div className={styles.card}>
       <div className={styles.heart}>
