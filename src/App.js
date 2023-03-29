@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import axios from 'axios';
+
 import { Card } from './components/Card';
 import { Drawer } from './components/Drawer';
 import { Header } from './components/Header';
@@ -8,23 +10,35 @@ function App() {
   const [sneakersInTheCart, setSneakersInTheCart] = useState([]);
   const [searchSneakers, setSearchSneakers] = useState('');
   const [cartOpened, setCartOpened] = useState(false);
-
-  console.log(sneakers);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
-    fetch('https://642046ca25cb65721045ec32.mockapi.io/Sneakers')
-      .then((res) => res.json())
-      .then((json) => {
-        setSneakers(json);
-      });
+    axios.get('https://run.mocky.io/v3/1b613964-30f7-48c0-a8c4-c89b7869f27d').then((res) => {
+      setSneakers(res.data);
+    });
+    axios.get('https://642046ca25cb65721045ec32.mockapi.io/Cart').then((res) => {
+      setSneakersInTheCart(res.data);
+    });
   }, []);
 
   const addToCart = (obj) => {
-    setSneakersInTheCart((prev) => [...prev, obj]);
+    axios
+      .post('https://642046ca25cb65721045ec32.mockapi.io/Cart', obj)
+      .then((res) => setSneakersInTheCart((prev) => [...prev, res.data]));
+    // setSneakersInTheCart((prev) => [...prev, obj]);
   };
-  const removeFromCart = (index) => {
-    sneakers.filter((item) => item.id !== index);
-    console.log(index);
+
+  const addToFavorites = (obj) => {
+    axios
+      .post('https://642046ca25cb65721045ec32.mockapi.io/Favorites', obj)
+      .then((res) => setFavorites((prev) => [...prev, res.data]));
+    // setSneakersInTheCart((prev) => [...prev, obj]);
+  };
+
+  const removeFromCart = (id) => {
+    console.log(id);
+    axios.delete(`https://642046ca25cb65721045ec32.mockapi.io/Cart/${id}`);
+    setSneakersInTheCart((prev) => prev.filter((item) => item.id !== id));
   };
 
   const ifSearchFieldChanged = (event) => {
@@ -69,7 +83,7 @@ function App() {
                 priceTag={item.priceTag}
                 key={index}
                 img={item.img}
-                onClickFavoriteButton={() => console.log('Добавили в закладки')}
+                onFavorite={addToFavorites}
                 onClickPlusButton={(obj) => addToCart(obj)}
               />
             ))}
