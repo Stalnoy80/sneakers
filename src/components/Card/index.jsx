@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styles from './Card.module.scss';
 
-export const Card = ({ title, price, img, priceTag, onClickPlusButton }) => {
+export const Card = ({ title, price, img, priceTag, onClickPlusButton, addToFavorites }) => {
   const [isAdded, setIsAdded] = useState(0);
-  const [inFaforite, setInFaforite] = useState(true);
+  const [onFavorite, setInFaforite] = useState(true);
 
   const onClickPlus = () => {
     setIsAdded(!isAdded);
@@ -11,7 +11,8 @@ export const Card = ({ title, price, img, priceTag, onClickPlusButton }) => {
   };
 
   const thisWillSetFavorite = () => {
-    setInFaforite(!inFaforite);
+    addToFavorites({ title, price, img });
+    setInFaforite(!onFavorite);
   };
 
   return (
@@ -19,7 +20,7 @@ export const Card = ({ title, price, img, priceTag, onClickPlusButton }) => {
       <div className={styles.heart}>
         <img
           onClick={thisWillSetFavorite}
-          src={inFaforite ? '/heartU.svg' : '/heartL.svg'}
+          src={onFavorite ? '/heartU.svg' : '/heartL.svg'}
           alt="heartU"
           // onClick={onClickFavoriteButton}
         />

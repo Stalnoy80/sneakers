@@ -83,7 +83,7 @@ function App() {
                 priceTag={item.priceTag}
                 key={index}
                 img={item.img}
-                onFavorite={addToFavorites}
+                addToFavorites={(obj) => addToFavorites(obj)}
                 onClickPlusButton={(obj) => addToCart(obj)}
               />
             ))}
