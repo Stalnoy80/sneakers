@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Route } from 'react-router-dom';
 
-import { Card } from './components/Card';
 import { Drawer } from './components/Drawer';
 import { Header } from './components/Header';
+
+import Home from './pages/Home';
+import Favorites from './pages/Favorites';
 
 function App() {
   const [sneakers, setSneakers] = useState([]);
@@ -19,6 +22,9 @@ function App() {
     axios.get('https://642046ca25cb65721045ec32.mockapi.io/Cart').then((res) => {
       setSneakersInTheCart(res.data);
     });
+    axios.get('https://642046ca25cb65721045ec32.mockapi.io/Favorites').then((res) => {
+      setFavorites(res.data);
+    });
   }, []);
 
   const addToCart = (obj) => {
@@ -28,17 +34,28 @@ function App() {
     // setSneakersInTheCart((prev) => [...prev, obj]);
   };
 
-  const addToFavorites = (obj) => {
-    axios
-      .post('https://642046ca25cb65721045ec32.mockapi.io/Favorites', obj)
-      .then((res) => setFavorites((prev) => [...prev, res.data]));
-    // setSneakersInTheCart((prev) => [...prev, obj]);
-  };
-
   const removeFromCart = (id) => {
     console.log(id);
     axios.delete(`https://642046ca25cb65721045ec32.mockapi.io/Cart/${id}`);
     setSneakersInTheCart((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const addToFavorites = async (obj) => {
+    try {
+      if (favorites.find((favObj) => favObj.id === obj.id)) {
+        axios.delete(`https://642046ca25cb65721045ec32.mockapi.io/Favorites/${obj.id}`);
+      } else {
+        const { data } = await axios.post(
+          'https://642046ca25cb65721045ec32.mockapi.io/Favorites',
+          obj,
+        );
+        setFavorites((prev) => [...prev, data]);
+      }
+    } catch (error) {
+      // setSneakersInTheCart((prev) => [...prev, obj]);
+
+      alert('не удалось добавить в избранное');
+    }
   };
 
   const ifSearchFieldChanged = (event) => {
@@ -55,40 +72,20 @@ function App() {
         />
       )}
       <Header onClickCart={() => setCartOpened(true)} />
-      <div className="content p-40">
-        <div className="d-flex align-center justify-between mb-40">
-          <h1>{searchSneakers ? `Поиск по запросу: "${searchSneakers}"` : 'Все кроссовки'}</h1>
-          <div className="search-block d-flex">
-            <img src="search.svg" alt="search" />
-            <input onChange={ifSearchFieldChanged} value={searchSneakers} placeholder="Поиск..." />
-            {searchSneakers && (
-              <img
-                onClick={() => {
-                  setSearchSneakers('');
-                }}
-                className="clearBtn "
-                src="/delete.svg"
-                alt="clear"
-              />
-            )}
-          </div>
-        </div>
-        <div className="d-flex flex-wrap">
-          {sneakers
-            .filter((item) => item.title.toLowerCase().includes(searchSneakers.toLowerCase()))
-            .map((item, index) => (
-              <Card
-                price={item.price}
-                title={item.title}
-                priceTag={item.priceTag}
-                key={index}
-                img={item.img}
-                addToFavorites={(obj) => addToFavorites(obj)}
-                onClickPlusButton={(obj) => addToCart(obj)}
-              />
-            ))}
-        </div>
-      </div>
+
+      <Route path="/" exact>
+        <Home
+          searchSneakers={searchSneakers}
+          ifSearchFieldChanged={ifSearchFieldChanged}
+          setSearchSneakers={setSearchSneakers}
+          sneakers={sneakers}
+          addToFavorites={addToFavorites}
+          addToCart={addToCart}
+        />
+      </Route>
+      <Route path="/Favorites" exact>
+        <Favorites sneakers={favorites} addToFavorites={addToFavorites} />
+      </Route>
     </div>
   );
 }
