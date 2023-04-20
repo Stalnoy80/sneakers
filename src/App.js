@@ -28,14 +28,15 @@ function App() {
   }, []);
 
   const addToCart = (obj) => {
-    axios
-      .post('https://642046ca25cb65721045ec32.mockapi.io/Cart', obj)
-      .then((res) => setSneakersInTheCart((prev) => [...prev, res.data]));
-    // setSneakersInTheCart((prev) => [...prev, obj]);
+    if (sneakersInTheCart.find((item) => Number(item.id) === Number(obj.id))) {
+      axios.delete(`https://642046ca25cb65721045ec32.mockapi.io/Cart/${obj.id}`);
+      setSneakersInTheCart((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)));
+    } else {
+      axios.post('https://642046ca25cb65721045ec32.mockapi.io/Cart', obj);
+      setSneakersInTheCart((prev) => [...prev, obj]);
+    }
   };
-
   const removeFromCart = (id) => {
-    console.log(id);
     axios.delete(`https://642046ca25cb65721045ec32.mockapi.io/Cart/${id}`);
     setSneakersInTheCart((prev) => prev.filter((item) => item.id !== id));
   };

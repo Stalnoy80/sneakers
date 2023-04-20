@@ -17,7 +17,7 @@ export const Drawer = ({ sneakersInTheCart, onClickCartWillClose, onClickWillRem
         {sneakersInTheCart.length > 0 ? (
           <div className="items">
             {sneakersInTheCart.map((obj) => (
-              <div className="cartItem d-flex align-center mb-10">
+              <div key={obj.id} className="cartItem d-flex align-center mb-10">
                 <div style={{ backgroundImage: `url(${obj.img})` }} className="cartItemImg"></div>
 
                 <div className="mr-20 flex">
