@@ -7,7 +7,24 @@ function Home({
   sneakers,
   addToFavorites,
   addToCart,
+  itemsLoading,
 }) {
+  const filteredSneakers = sneakers.filter((item) =>
+    item.title.toLowerCase().includes(searchSneakers.toLowerCase()),
+  );
+
+  const renderItems = () => {
+    return (itemsLoading ? [...Array(10)] : filteredSneakers).map((item, index) => (
+      <Card
+        key={index}
+        addToFavorites={(obj) => addToFavorites(obj)}
+        onClickPlusButton={(obj) => addToCart(obj)}
+        loading={itemsLoading}
+        {...item}
+      />
+    ));
+  };
+
   return (
     <div className="content p-40">
       <div className="d-flex align-center justify-between mb-40">
@@ -27,18 +44,7 @@ function Home({
           )}
         </div>
       </div>
-      <div className="d-flex flex-wrap">
-        {sneakers
-          .filter((item) => item.title.toLowerCase().includes(searchSneakers.toLowerCase()))
-          .map((item, index) => (
-            <Card
-              key={index}
-              addToFavorites={(obj) => addToFavorites(obj)}
-              onClickPlusButton={(obj) => addToCart(obj)}
-              {...item}
-            />
-          ))}
-      </div>
+      <div className="d-flex flex-wrap">{renderItems()}</div>
     </div>
   );
 }

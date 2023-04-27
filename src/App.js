@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext } from 'react';
 import axios from 'axios';
 import { Route } from 'react-router-dom';
 
@@ -8,23 +8,35 @@ import { Header } from './components/Header';
 import Home from './pages/Home';
 import Favorites from './pages/Favorites';
 
+export const AppContext = createContext({});
+
 function App() {
   const [sneakers, setSneakers] = useState([]);
   const [sneakersInTheCart, setSneakersInTheCart] = useState([]);
   const [searchSneakers, setSearchSneakers] = useState('');
   const [cartOpened, setCartOpened] = useState(false);
   const [favorites, setFavorites] = useState([]);
+  const [itemsLoading, setItemsLoading] = useState(false);
 
   useEffect(() => {
-    axios.get('https://run.mocky.io/v3/1b613964-30f7-48c0-a8c4-c89b7869f27d').then((res) => {
-      setSneakers(res.data);
-    });
-    axios.get('https://642046ca25cb65721045ec32.mockapi.io/Cart').then((res) => {
-      setSneakersInTheCart(res.data);
-    });
-    axios.get('https://642046ca25cb65721045ec32.mockapi.io/Favorites').then((res) => {
-      setFavorites(res.data);
-    });
+    async function fetchData() {
+      setItemsLoading(true);
+
+      const cartResponse = await axios.get('https://642046ca25cb65721045ec32.mockapi.io/Cart');
+      const favoritesResponse = await axios.get(
+        'https://642046ca25cb65721045ec32.mockapi.io/Favorites',
+      );
+      const itemResponse = await axios.get(
+        'https://run.mocky.io/v3/0bd33244-4797-4ca5-9766-191f2f959adc',
+      );
+
+      setSneakers(itemResponse.data);
+      setSneakersInTheCart(cartResponse.data);
+      setFavorites(favoritesResponse.data);
+      setItemsLoading(false);
+    }
+
+    fetchData();
   }, []);
 
   const addToCart = (obj) => {
@@ -43,8 +55,9 @@ function App() {
 
   const addToFavorites = async (obj) => {
     try {
-      if (favorites.find((favObj) => favObj.id === obj.id)) {
+      if (favorites.find((favObj) => Number(favObj.id) === Number(obj.id))) {
         axios.delete(`https://642046ca25cb65721045ec32.mockapi.io/Favorites/${obj.id}`);
+        setFavorites((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)));
       } else {
         const { data } = await axios.post(
           'https://642046ca25cb65721045ec32.mockapi.io/Favorites',
@@ -63,31 +76,48 @@ function App() {
     setSearchSneakers(event.target.value);
   };
 
-  return (
-    <div className="wrapper clear">
-      {cartOpened && (
-        <Drawer
-          sneakersInTheCart={sneakersInTheCart}
-          onClickCartWillClose={() => setCartOpened(false)}
-          onClickWillRemoveItem={removeFromCart}
-        />
-      )}
-      <Header onClickCart={() => setCartOpened(true)} />
+  const isItemAdded = (id) => {
+    return sneakersInTheCart.some((obj) => Number(obj.id) === Number(id));
+  };
 
-      <Route path="/" exact>
-        <Home
-          searchSneakers={searchSneakers}
-          ifSearchFieldChanged={ifSearchFieldChanged}
-          setSearchSneakers={setSearchSneakers}
-          sneakers={sneakers}
-          addToFavorites={addToFavorites}
-          addToCart={addToCart}
-        />
-      </Route>
-      <Route path="/Favorites" exact>
-        <Favorites sneakers={favorites} addToFavorites={addToFavorites} />
-      </Route>
-    </div>
+  return (
+    <AppContext.Provider
+      value={{
+        sneakers,
+        sneakersInTheCart,
+        favorites,
+        isItemAdded,
+        addToFavorites,
+        setCartOpened,
+        setSneakersInTheCart,
+      }}>
+      <div className="wrapper clear">
+        {cartOpened && (
+          <Drawer
+            sneakersInTheCart={sneakersInTheCart}
+            onClickCartWillClose={() => setCartOpened(false)}
+            onClickWillRemoveItem={removeFromCart}
+          />
+        )}
+        <Header onClickCart={() => setCartOpened(true)} />
+
+        <Route path="/" exact>
+          <Home
+            sneakersInTheCart={sneakersInTheCart}
+            searchSneakers={searchSneakers}
+            ifSearchFieldChanged={ifSearchFieldChanged}
+            setSearchSneakers={setSearchSneakers}
+            sneakers={sneakers}
+            addToFavorites={addToFavorites}
+            addToCart={addToCart}
+            itemsLoading={itemsLoading}
+          />
+        </Route>
+        <Route path="/Favorites" exact>
+          <Favorites />
+        </Route>
+      </div>
+    </AppContext.Provider>
   );
 }
 

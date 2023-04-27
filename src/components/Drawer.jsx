@@ -1,6 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Info from './Info';
+import axios from 'axios';
+import { useCart } from './Hooks/useCart';
 
-export const Drawer = ({ sneakersInTheCart, onClickCartWillClose, onClickWillRemoveItem, id }) => {
+export const Drawer = ({ onClickCartWillClose, onClickWillRemoveItem, id }) => {
+  const { setSneakersInTheCart, sneakersInTheCart, totalPrice } = useCart();
+  const [orderFinished, setOrderFinished] = useState(false);
+  const [orderId, setOrderId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onOrderButtonClick = async () => {
+    try {
+      setIsLoading(true);
+      // const { data } = await axios.post(
+      //   'https://mocki.io/v1/fb3f6862-9b00-4257-a19b-cb8d465f0da6',
+      //   {
+      //     items: sneakersInTheCart,
+      //   },
+      // );
+      // setOrderId(data.id);
+      setOrderFinished(true);
+      setSneakersInTheCart([]);
+    } catch (error) {
+      alert('не удалось создать заказ');
+    }
+    setIsLoading(false);
+  };
   return (
     <div className="overlay">
       <div className="drawer ">
@@ -37,29 +62,29 @@ export const Drawer = ({ sneakersInTheCart, onClickCartWillClose, onClickWillRem
                 <li className="d-flex">
                   <span>Итого:</span>
                   <div></div>
-                  <b>21 498 руб.</b>
+                  <b>{totalPrice} руб.</b>
                 </li>
                 <li className="d-flex">
                   <span>Налог 5%:</span>
                   <div></div>
-                  <b>1 074 руб.</b>
+                  <b>{Math.round(totalPrice * 0.2)} руб.</b>
                 </li>
               </ul>
-              <button className="greenButton">
+              <button disabled={isLoading} className="greenButton" onClick={onOrderButtonClick}>
                 Оформить заказ <img src="/arrow.svg" alt="arrow" />
               </button>
             </div>
           </div>
         ) : (
-          <div className="cartEmpty d-flex align-center justify-center flex-column flex">
-            <img className="mb-20" width="120px" src="./empty-cart.jpg" alt="Empty" />
-            <h2>Пустая корзина</h2>
-            <p className="opacity-6">Добавьте вкусную пиццу...</p>
-            <button onClick={onClickCartWillClose} className="greenButton">
-              <img src="./arrow.svg" alt="Arrow" />
-              Вернуться назад
-            </button>
-          </div>
+          <Info
+            title={orderFinished ? 'Заказ оформлен!' : 'Корзина пустая'}
+            description={
+              orderFinished
+                ? `Ваш заказ скоро будет передан курьерской доставке`
+                : 'Добавьте хотя бы одну пару кросовок, чтобы сдлеать заказ...'
+            }
+            image={orderFinished ? '../order.jpg' : '../empty-cart.jpg'}
+          />
         )}
       </div>
     </div>
