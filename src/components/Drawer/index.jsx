@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import Info from './Info';
 import axios from 'axios';
-import { useCart } from './Hooks/useCart';
 
-export const Drawer = ({ onClickCartWillClose, onClickWillRemoveItem, id }) => {
+import Info from '../Info';
+import { useCart } from '../Hooks/useCart';
+
+import styles from './Drawer.module.scss';
+
+export const Drawer = ({ onClickCartWillClose, onClickWillRemoveItem, id, opened }) => {
   const { setSneakersInTheCart, sneakersInTheCart, totalPrice } = useCart();
   const [orderFinished, setOrderFinished] = useState(false);
   const [orderId, setOrderId] = useState(null);
@@ -27,8 +30,8 @@ export const Drawer = ({ onClickCartWillClose, onClickWillRemoveItem, id }) => {
     setIsLoading(false);
   };
   return (
-    <div className="overlay">
-      <div className="drawer ">
+    <div className={`${styles.overlay} ${opened ? styles.overlayVisible : ''}`}>
+      <div className={styles.drawer}>
         <h2 className="mb-30 justify-between d-flex ">
           Корзина
           <img

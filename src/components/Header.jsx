@@ -27,7 +27,9 @@ export const Header = ({ onClickCart }) => {
           </Link>
         </li>
         <li>
-          <img width={18} height={18} src="user.svg" alt="user" />
+          <Link to="/Orders">
+            <img width={18} height={18} src="user.svg" alt="user" />
+          </Link>
         </li>
       </ul>
     </header>

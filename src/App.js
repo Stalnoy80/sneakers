@@ -7,6 +7,7 @@ import { Header } from './components/Header';
 
 import Home from './pages/Home';
 import Favorites from './pages/Favorites';
+import Orders from './pages/Orders';
 
 export const AppContext = createContext({});
 
@@ -26,9 +27,7 @@ function App() {
       const favoritesResponse = await axios.get(
         'https://642046ca25cb65721045ec32.mockapi.io/Favorites',
       );
-      const itemResponse = await axios.get(
-        'https://run.mocky.io/v3/0bd33244-4797-4ca5-9766-191f2f959adc',
-      );
+      const itemResponse = await axios.get('https://stalnoy80.github.io/sneakers');
 
       setSneakers(itemResponse.data);
       setSneakersInTheCart(cartResponse.data);
@@ -90,6 +89,7 @@ function App() {
         addToFavorites,
         setCartOpened,
         setSneakersInTheCart,
+        addToCart,
       }}>
       <div className="wrapper clear">
         {cartOpened && (
@@ -97,6 +97,7 @@ function App() {
             sneakersInTheCart={sneakersInTheCart}
             onClickCartWillClose={() => setCartOpened(false)}
             onClickWillRemoveItem={removeFromCart}
+            opened={cartOpened}
           />
         )}
         <Header onClickCart={() => setCartOpened(true)} />
@@ -115,6 +116,9 @@ function App() {
         </Route>
         <Route path="/Favorites" exact>
           <Favorites />
+        </Route>
+        <Route path="/Orders" exact>
+          <Orders />
         </Route>
       </div>
     </AppContext.Provider>
