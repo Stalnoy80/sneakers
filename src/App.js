@@ -2,7 +2,7 @@ import { useEffect, useState, createContext } from 'react';
 import axios from 'axios';
 import { Route } from 'react-router-dom';
 
-import { Drawer } from './components/Drawer';
+import Drawer from './components/Drawer';
 import { Header } from './components/Header';
 
 import Home from './pages/Home';
@@ -21,35 +21,63 @@ function App() {
 
   useEffect(() => {
     async function fetchData() {
-      setItemsLoading(true);
+      try {
+        const [cartResponse, favoritesResponse, itemResponse] = await Promise.all([
+          axios.get('https://642046ca25cb65721045ec32.mockapi.io/Cart'),
+          axios.get('https://642046ca25cb65721045ec32.mockapi.io/Favorites'),
+          axios.get('https://stalnoy80.github.io/sneakers'),
+        ]);
 
-      const cartResponse = await axios.get('https://642046ca25cb65721045ec32.mockapi.io/Cart');
-      const favoritesResponse = await axios.get(
-        'https://642046ca25cb65721045ec32.mockapi.io/Favorites',
-      );
-      const itemResponse = await axios.get('https://stalnoy80.github.io/sneakers');
-
-      setSneakers(itemResponse.data);
-      setSneakersInTheCart(cartResponse.data);
-      setFavorites(favoritesResponse.data);
-      setItemsLoading(false);
+        setSneakers(itemResponse.data);
+        setSneakersInTheCart(cartResponse.data);
+        setFavorites(favoritesResponse.data);
+        setItemsLoading(false);
+      } catch (error) {
+        alert('ошибка при запросе данных %(');
+        console.error(error);
+      }
     }
-
+    setItemsLoading(true);
     fetchData();
   }, []);
 
-  const addToCart = (obj) => {
-    if (sneakersInTheCart.find((item) => Number(item.id) === Number(obj.id))) {
-      axios.delete(`https://642046ca25cb65721045ec32.mockapi.io/Cart/${obj.id}`);
-      setSneakersInTheCart((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)));
-    } else {
-      axios.post('https://642046ca25cb65721045ec32.mockapi.io/Cart', obj);
-      setSneakersInTheCart((prev) => [...prev, obj]);
+  const addToCart = async (obj) => {
+    try {
+      const findItem = sneakersInTheCart.find((item) => Number(item.parentId) === Number(obj.id));
+      if (findItem) {
+        setSneakersInTheCart((prev) =>
+          prev.filter((item) => Number(item.parentId) !== Number(obj.id)),
+        );
+        await axios.delete(`https://642046ca25cb65721045ec32.mockapi.io/Cart/${findItem.id}`);
+      } else {
+        setSneakersInTheCart((prev) => [...prev, obj]);
+        const { data } = await axios.post('https://642046ca25cb65721045ec32.mockapi.io/Cart', obj);
+        setSneakersInTheCart((prev) =>
+          prev.map((item) => {
+            if (item.parentId === data.patentId) {
+              return {
+                ...item,
+                id: data.id,
+              };
+            }
+            return item;
+          }),
+        );
+      }
+    } catch (error) {
+      alert('Не получилось добавить в корзину');
+      console.error(error);
     }
   };
   const removeFromCart = (id) => {
-    axios.delete(`https://642046ca25cb65721045ec32.mockapi.io/Cart/${id}`);
-    setSneakersInTheCart((prev) => prev.filter((item) => item.id !== id));
+    try {
+      setSneakersInTheCart((prev) => prev.filter((item) => Number(item.parentId) !== Number(id)));
+
+      axios.delete(`https://642046ca25cb65721045ec32.mockapi.io/Cart/${id}`);
+    } catch (error) {
+      alert('Не получилось удалить из корзины');
+      console.error(error);
+    }
   };
 
   const addToFavorites = async (obj) => {
@@ -76,7 +104,7 @@ function App() {
   };
 
   const isItemAdded = (id) => {
-    return sneakersInTheCart.some((obj) => Number(obj.id) === Number(id));
+    return sneakersInTheCart.some((obj) => Number(obj.parentId) === Number(id));
   };
 
   return (

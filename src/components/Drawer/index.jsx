@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Transition } from 'react-transition-group';
+import { CSSTransition } from 'react-transition-group';
 
 import Info from '../Info';
 import { useCart } from '../Hooks/useCart';
 
 import styles from './Drawer.module.scss';
 
-export const Drawer = ({ onClickCartWillClose, onClickWillRemoveItem, id, opened }) => {
+const Drawer = ({ onClickCartWillClose, onClickWillRemoveItem, id, opened }) => {
   const { setSneakersInTheCart, sneakersInTheCart, totalPrice } = useCart();
   const [orderFinished, setOrderFinished] = useState(false);
   const [orderId, setOrderId] = useState(null);
@@ -43,7 +45,7 @@ export const Drawer = ({ onClickCartWillClose, onClickWillRemoveItem, id, opened
         </h2>
 
         {sneakersInTheCart.length > 0 ? (
-          <div className="items">
+          <div className="items flex">
             {sneakersInTheCart.map((obj) => (
               <div key={obj.id} className="cartItem d-flex align-center mb-10">
                 <div style={{ backgroundImage: `url(${obj.img})` }} className="cartItemImg"></div>
@@ -93,3 +95,5 @@ export const Drawer = ({ onClickCartWillClose, onClickWillRemoveItem, id, opened
     </div>
   );
 };
+
+export default Drawer;

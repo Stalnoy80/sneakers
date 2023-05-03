@@ -17,13 +17,14 @@ export const Card = ({
 }) => {
   const { isItemAdded, addToFavorites } = useContext(AppContext);
   const [onFavorite, setInFaforite] = useState(heartOn);
+  const itemObj = { title, parentId: id, price, img, id };
 
   const onClickPlus = () => {
-    onClickPlusButton({ title, price, img, id });
+    onClickPlusButton(itemObj);
   };
 
   const thisWillSetFavorite = () => {
-    addToFavorites({ title, price, img, id });
+    addToFavorites(itemObj);
     setInFaforite(!onFavorite);
   };
 
