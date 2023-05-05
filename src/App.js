@@ -33,7 +33,7 @@ function App() {
         setFavorites(favoritesResponse.data);
         setItemsLoading(false);
       } catch (error) {
-        alert('ошибка при запросе данных %(');
+        alert('Cant read data');
         console.error(error);
       }
     }
@@ -65,7 +65,7 @@ function App() {
         );
       }
     } catch (error) {
-      alert('Не получилось добавить в корзину');
+      alert('Cant added to cart');
       console.error(error);
     }
   };
@@ -75,7 +75,7 @@ function App() {
 
       axios.delete(`https://642046ca25cb65721045ec32.mockapi.io/Cart/${id}`);
     } catch (error) {
-      alert('Не получилось удалить из корзины');
+      alert('Cant remove from cart');
       console.error(error);
     }
   };
@@ -95,7 +95,7 @@ function App() {
     } catch (error) {
       // setSneakersInTheCart((prev) => [...prev, obj]);
 
-      alert('не удалось добавить в избранное');
+      alert('cant add to Fav');
     }
   };
 
@@ -130,7 +130,7 @@ function App() {
         )}
         <Header onClickCart={() => setCartOpened(true)} />
 
-        <Route path="/" exact>
+        <Route path="" exact>
           <Home
             sneakersInTheCart={sneakersInTheCart}
             searchSneakers={searchSneakers}
@@ -142,10 +142,10 @@ function App() {
             itemsLoading={itemsLoading}
           />
         </Route>
-        <Route path="/Favorites" exact>
+        <Route path="Favorites" exact>
           <Favorites />
         </Route>
-        <Route path="/Orders" exact>
+        <Route path="Orders" exact>
           <Orders />
         </Route>
       </div>
