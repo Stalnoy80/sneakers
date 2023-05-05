@@ -9,8 +9,8 @@ function Home({
   addToCart,
   itemsLoading,
 }) {
-  const filteredSneakers = sneakers.filter((item) =>
-    item.title.toLowerCase().includes(searchSneakers.toLowerCase()),
+  const filteredSneakers = sneakers?.filter((item) =>
+    item.title?.toLowerCase()?.includes(searchSneakers?.toLowerCase()),
   );
 
   const renderItems = () => {
