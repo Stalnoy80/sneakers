@@ -14,15 +14,17 @@ function Home({
   );
 
   const renderItems = () => {
-    return (itemsLoading ? [...Array(10)] : filteredSneakers).map((item, index) => (
-      <Card
-        key={index}
-        addToFavorites={(obj) => addToFavorites(obj)}
-        onClickPlusButton={(obj) => addToCart(obj)}
-        loading={itemsLoading}
-        {...item}
-      />
-    ));
+    return (itemsLoading ? [...Array(10)] : sneakers.length > 0 ? filteredSneakers : []).map(
+      (item, index) => (
+        <Card
+          key={index}
+          addToFavorites={(obj) => addToFavorites(obj)}
+          onClickPlusButton={(obj) => addToCart(obj)}
+          loading={itemsLoading}
+          {...item}
+        />
+      ),
+    );
   };
 
   return (
